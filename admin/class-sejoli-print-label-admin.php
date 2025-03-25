@@ -127,47 +127,66 @@ class Admin {
      * @since   1.0.0
      * @return  json
      */
-	public function print_shipment_label(){
-		
-		$params = wp_parse_args( $_POST, array(
-            'orders' => NULL,
-            'nonce'  => NULL
-        ));
+	public function print_shipment_label() {
 
-        $respond = [
-            'valid'   => false,
-            'message' => NULL
-        ];
+	    $params = wp_parse_args( $_POST, array(
+	        'orders' => NULL,
+	        'nonce'  => NULL
+	    ));
 
-        $html = '';
+	    $respond = [
+	        'valid'   => false,
+	        'message' => NULL
+	    ];
 
-        if( wp_verify_nonce( $params['nonce'], 'sejoli-print-shipment-label') ) :
+	    $html = '';
 
-            unset( $params['nonce'] );
-  
+	    // Verifying the nonce
+	    if( wp_verify_nonce( $params['nonce'], 'sejoli-print-shipment-label') ) :
+	        unset( $params['nonce'] );
+
 	        $response = sejolisa_get_orders(['ID' => $params['orders'] ]);
 
+	        error_log(print_r($response, true));
+
 	        if(false !== $response['valid']) :
-	        	
-			  	require_once( plugin_dir_path( __FILE__ ) . 'partials/sejoli-print-label-template.php' );
+	            require_once( plugin_dir_path( __FILE__ ) . 'partials/sejoli-print-label-template.php' );
+	        endif;
+	    endif;
 
-			endif;
+	    // Dompdf settings for PDF generation
+	    $options = new Options();
+	    $options->set('isRemoteEnabled', true);
+	    $dompdf = new Dompdf($options);
+	    $dompdf->load_html($html);
+	    $dompdf->setPaper('P', 'A4', 'portrait');
+	    $dompdf->render();
+	    $output = $dompdf->output();
 
-		endif;
+	    $upload_dir = wp_upload_dir();
 
-		$options = new Options();
-		$options->set('isRemoteEnabled', true);
-		$dompdf = new Dompdf($options);
-		$dompdf->load_html($html);
-		$dompdf->setPaper('P', 'A4', 'portrait');
-		$dompdf->render();
-		$output = $dompdf->output();
-		wp_mkdir_p( SEJOLI_JNE_UPLOAD_DIR );
-		$file_name = 'label-pengiriman-'.date("Y-m-d h:i:sa").'.pdf';
-		$file_path = SEJOLI_JNE_UPLOAD_DIR . '/'. $file_name;
-		file_put_contents( $file_path, $output);
-		$invoice_url = SEJOLI_JNE_UPLOAD_URL . '/'. $file_name;
-		return wp_send_json($invoice_url);
+	    define( 'SEJOLI_LABEL_PENGIRIMAN_UPLOAD_DIR', $upload_dir['basedir'] . '/label-pengiriman' );
+	    define( 'SEJOLI_LABEL_PENGIRIMAN_UPLOAD_URL', $upload_dir['baseurl'] . '/label-pengiriman' );
+
+	    // Generate the file name with timestamp
+	    // $file_name = 'label-pengiriman-' . date("Y-m-d h:i:sa") . '.pdf';
+	    $file_name = 'label-pengiriman-' . date("Y-m-d_H-i-s") . '.pdf';
+	    
+	    $file_path = SEJOLI_LABEL_PENGIRIMAN_UPLOAD_DIR . '/' . $file_name;
+
+	    if (!is_dir(SEJOLI_LABEL_PENGIRIMAN_UPLOAD_DIR)) {
+		    mkdir(SEJOLI_LABEL_PENGIRIMAN_UPLOAD_DIR, 0755, true);
+		}
+
+		if (is_writable(SEJOLI_LABEL_PENGIRIMAN_UPLOAD_DIR)) {
+		    file_put_contents($file_path, $output);
+		} else {
+		    error_log('Directory is not writable');
+		}
+
+	    $invoice_url = SEJOLI_LABEL_PENGIRIMAN_UPLOAD_URL . '/' . $file_name;
+
+	    return wp_send_json($invoice_url);
 	
 	}
 

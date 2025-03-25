@@ -112,7 +112,18 @@
 					</tr>
 					<tr style="vertical-align: middle;">
 						<td style="width: 43.05mm"><?php echo carbon_get_theme_option('print_label_store_address'); ?></td>
-						<td style="width: 43.05mm"><?php echo $value->meta_data['shipping_data']['address'].', '.$receiver_destination_city['type'].' '.$receiver_destination_city['city'].', '.$receiver_destination_city['subdistrict_name'].', '.$receiver_destination_city['province']; ?></td>
+						<td style="width: 43.05mm">
+						    <?php 
+						        if (isset($value->meta_data['shipping_data']['address'])) {
+						            echo $value->meta_data['shipping_data']['address'] . ', ';
+						        } else {
+						            echo 'Address not available, ';
+						        }
+
+						        echo $receiver_destination_city['type'] . ' ' . $receiver_destination_city['city'] . ', ' . 
+						            $receiver_destination_city['subdistrict_name'] . ', ' . $receiver_destination_city['province']; 
+						    ?>
+						</td>
 					</tr>
 					<tr style="vertical-align: middle;">
 						<td style="width: 43.05mm"><div style="height: 4px;"></div></td>
@@ -137,9 +148,32 @@
 					<?php foreach ($value->meta_data['variants'] as $variants): ?>
 					<tr style="vertical-align: middle;">
 						<td style="width: 43.05mm">&nbsp;</td>
-						<td style="width: 43.05mm"><?php echo $variants['type'] .' : '. $variants['label']; ?></br></td>
+						<td style="width: 43.05mm"><?php echo ucwords(strtolower($variants['type'])) .' : '. $variants['label']; ?></br></td>
 					</tr>
 			        <?php endforeach; ?>
+					<tr style="vertical-align: middle;">
+						<td style="width: 43.05mm"><div style="height: 4px;"></div></td>
+						<td style="width: 43.05mm"><div style="height: 4px;"></div></td>
+					</tr>
+					<tr style="vertical-align: middle;">
+						<td style="width: 43.05mm"><div style="border-bottom: 1px dashed #999;"></div></td>
+						<td style="width: 43.05mm"><div style="border-bottom: 1px dashed #999;"></div></td>
+					</tr>
+					<tr style="vertical-align: middle;">
+						<td style="width: 43.05mm"><div style="height: 1px;"></div></td>
+						<td style="width: 43.05mm"><div style="height: 1px;"></div></td>
+					</tr>
+					<tr style="vertical-align: middle;">
+						<td style="width: 43.05mm">
+							<b>
+						        <?php 
+						            $note = isset($value->meta_data['note']) ? $value->meta_data['note'] : '-'; 
+						            echo __('CATATAN', 'sejoli-print-label');
+						        ?>
+						    </b>
+						</td>
+						<td style="width: 43.05mm"><?php echo $note; ?></td>
+					</tr>
 					<tr style="vertical-align: middle;">
 						<td style="width: 43.05mm"><div style="height: 4px;"></div></td>
 						<td style="width: 43.05mm"><div style="height: 4px;"></div></td>
