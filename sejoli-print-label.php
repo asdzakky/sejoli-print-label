@@ -9,14 +9,14 @@
  * that starts the plugin.
  *
  * @link              https://sejoli.co.id
- * @since             1.0.0
+ * @since             1.0.1
  * @package           Sejoli_Print_Label
  *
  * @wordpress-plugin
  * Plugin Name:       Sejoli - Print Label
  * Plugin URI:        https://sejoli.co.id
  * Description:       Plugin untuk Sejoli Standalone untuk membuat label pengiriman.
- * Version:           1.0.0
+ * Version:           1.0.1
  * Author:            Sejoli
  * Author URI:        https://sejoli.co.id
  * License:           GPL-2.0+
@@ -34,10 +34,10 @@ if ( ! defined( 'WPINC' ) ) {
 
 /**
  * Currently plugin version.
- * Start at version 1.0.0 and use SemVer - https://semver.org
+ * Start at version 1.0.1 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'SEJOLI_PRINT_LABEL_VERSION', '1.0.0' );
+define( 'SEJOLI_PRINT_LABEL_VERSION', '1.0.1' );
 define( 'SEJOLI_PRINT_LABEL_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SEJOLI_PRINT_LABEL_URL', plugin_dir_url( __FILE__ ) );
 
@@ -121,7 +121,7 @@ else :
 	 * then kicking off the plugin from this point in the file does
 	 * not affect the page life cycle.
 	 *
-	 * @since    1.0.0
+	 * @since    1.0.1
 	 */
 	function run_sejoli_print_label() {
 
